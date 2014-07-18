@@ -28,6 +28,7 @@ class DAO(object):
     DATABASE      = database.database
     SEQCOLUMN     = 'id'
     SEQCOLUMNTYPE = int
+    CACHE         = dict()
 
     def __init__(self):
         object.__init__(self)
@@ -69,10 +70,12 @@ class DAO(object):
         return self
 
     def insert(self):
+        self.CACHE.clear()
         self.DATABASE.insert(self.TABLENAME, **self.__sqlDict__())
         return self
 
     def update(self, **kwargs):
+        self.CACHE.clear()
         if kwargs:
             self.DATABASE.update(self.TABLENAME, 
                 where = self.__sqlWhere__(),
@@ -85,19 +88,25 @@ class DAO(object):
             return self
 
     def delete(self):
+        self.CACHE.clear()
         self.DATABASE.delete(self.TABLENAME,
             where = self.__sqlWhere__())
         return self
 
     @classmethod
     def select(cls, **kwargs):
-        sqliter = cls.DATABASE.select(cls.TABLENAME, **kwargs)
-        return [cls().set(**row) for row in sqliter]
+        key = cls.TABLENAME + repr(kwargs)
+        if key in cls.CACHE:
+            return cls.CACHE[key]
+        else:
+            sqliter = cls.DATABASE.select(cls.TABLENAME, **kwargs)
+            value = [cls().set(**row) for row in sqliter]
+            cls.CACHE[key] = value
+        return value
 
     @classmethod
     def selectFirst(cls, **kwargs):
         """
-
         :rtype : DAOlogs
         """
         DAOs = cls.select(**kwargs)
