@@ -1,0 +1,57 @@
+$def with (users)
+$var js = []
+$var css = []
+$var nav = []
+
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">用户列表</div>
+  <div class="panel-body">
+    <p>您可以更改用户的角色。</p>
+  </div>
+
+  <!-- Table -->
+  <table class="table">
+    <tr>
+        <td>编号</td><td>名称</td><td>角色</td><td>操作</td>
+    </tr>
+    $for user in users:
+      $ role = user.getRole()
+      <tr>
+          <td>$user.id</td>
+          <td>$user.name</td>
+          <td>$role.name</td>
+          <td>
+          $if role.id == 1:
+            不可编辑站长账户
+          $elif role.id == 2:
+            $if session.role.id == 1:
+              <a href="/userList?method=delete&amp;id_user=$user.id">删除</a>&nbsp;
+              <a href="/userList?method=setRole&amp;id_user=$user.id&amp;id_role=4">设为队长</a>&nbsp;
+              <a href="/userList?method=setRole&amp;id_user=$user.id&amp;id_role=3">设为会员</a>&nbsp;
+            $else:
+              不可编辑管理员账户
+          $elif role.id == 3:
+            $if session.role.id == 1:
+              <a href="/userList?method=delete&amp;id_user=$user.id">删除</a>&nbsp;
+              <a href="/userList?method=setRole&amp;id_user=$user.id&amp;id_role=2">设为管理员</a>&nbsp;
+              <a href="/userList?method=setRole&amp;id_user=$user.id&amp;id_role=4">设为队长</a>&nbsp;
+            $elif session.role.id == 2:
+              <a href="/userList?method=delete&amp;id_user=$user.id">删除</a>&nbsp;
+              <a href="/userList?method=setRole&amp;id_user=$user.id&amp;id_role=4">设为队长</a>&nbsp;
+            $else:
+              不可编辑会员账户
+          $elif role.id == 4:
+            $if session.role.id == 1:
+              <a href="/userList?method=delete&amp;id_user=$user.id">删除</a>&nbsp;
+              <a href="/userList?method=setRole&amp;id_user=$user.id&amp;id_role=2">设为管理员</a>&nbsp;
+              <a href="/userList?method=setRole&amp;id_user=$user.id&amp;id_role=3">设为会员</a>&nbsp;
+            $elif session.role.id == 2:
+              <a href="/userList?method=delete&amp;id_user=$user.id">删除</a>&nbsp;
+              <a href="/userList?method=setRole&amp;id_user=$user.id&amp;id_role=3">设为会员</a>&nbsp;
+            $else:
+              不可编辑队长账户
+          </td>
+      </tr>
+  </table>
+</div>

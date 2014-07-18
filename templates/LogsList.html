@@ -1,0 +1,33 @@
+$def with (logs, game)
+$if logs:
+  <table class="table table-striped table-hover">
+  <thead>
+  <tr>
+    <th>时间</th><th>操作</th>
+  $for i in range(4):
+    <th>$(i + 1) 位</th><th>SC</th>
+  </tr>
+  </thead>
+  <tbody>
+  $for log in logs:
+    <tr>
+    <td><abbr title="$log.gameat">$date_str(log.gameat)</abbr></td>
+    <td>
+      <div class="btn-group btn-group-xs">
+        <a type="button" class="btn" href="/log?ref=$log.ref">详情</a>
+        <a type="button" class="btn" target="_blank" href="http://tenhou.net/0/?log=$log.ref">牌谱</a>
+      </div>
+    </td>
+    $for logs_name in log.getLogs_name():
+      <td>
+        $ team = game.getTeamByUserName(logs_name.name)
+        <abbr title="$(team.name if team else u'未加入队伍')">
+        <a href="/playerView?id_game=$log.id_game&amp;name=$logs_name.name">$logs_name.name</a>
+        </abbr>
+      </td>
+      <td>
+        $logs_name.getSC()
+      </td>
+    </tr>
+  </tbody>
+  </table>

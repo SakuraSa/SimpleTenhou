@@ -1,0 +1,78 @@
+$def with(team)
+$ game = team.getGame()
+$ logs = team.getLogs(game.getLogs())
+$var js = []
+$var css = []
+$var nav = [("/", u"比赛列表", False), ("/gameView?id_game=%d" % game.id, u"比赛", False), ("/teamView?id_team=%d" % team.id, u"队伍数据", True)]
+
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h5>$team.name</h5>
+  </div>
+  <div class="panel-body">
+    <p>
+      属于<strong><a href="/gameView?id_game=$game.id">$game.name</a></strong>
+    </p>
+  $if logs:
+    <div id="chart" style="height:400px"></div>
+  </div>
+  <table class="table table-striped table-hover">
+    <thead>
+      <th>姓名</th>
+      <th>出场</th>
+      <th>顺位</th>
+      <th>积分</th>
+      <th>总点</th>
+      <th>最后出场</th>
+    </thead>
+    <tbody>
+    $for player in team.getUserNames():
+      $ pls = game.getLogsByUserName(player)
+      <tr>
+      <td><a href="/playerView?id_game=$game.id&amp;name=$player">$player</a></td>
+      $if pls:
+        <td>$len(pls)</td>
+        <td>
+        $for log in pls:
+          <a href="/log?ref=$log.ref">$log.getRanksByName(player)</a>
+        </td>
+        <td>$sum([log.getLogs_nameByUserName(player).getSC() for log in pls])</td>
+        <td>$sum([log.getLogs_nameByUserName(player).score for log in pls])</td>
+        <td><a href="/log?ref=$pls[0].ref"><abbr title="$pls[0].gameat">$date_str(pls[0].gameat)</abbr></a></td>
+      $else:
+        <td>0</td><td>无</td><td>0</td><td>0</td><td>尚未出场</td>
+      </tr>
+    <tr>
+    $if logs:
+      <td>总计</td>
+      <td>$len(logs)</td>
+      <td>
+      $for log in logs:
+        <a href="/log?ref=$log.ref">$log.getRanksByTeam(team)</a>
+      </td>
+      $ SCSum = sum([log.getLogs_nameByTeam(team).getSC() for log in logs])
+      $ SCAddon = team.getAddonSCSum()
+      <td>
+      $if SCAddon:
+        $if SCAddon > 0:
+          <abbr title="$SCSum + $abs(SCAddon)" class="text-success">$(SCSum + SCAddon)</abbr>
+        $else:
+          <abbr title="$SCSum - $abs(SCAddon)" class="text-danger">$(SCSum + SCAddon)</abbr>
+      $else:
+        $SCSum
+      </td>
+      <td>$sum([log.getLogs_nameByTeam(team).score for log in logs])</td>
+      <td><a href="/log?ref=$logs[0].ref"><abbr title="$logs[0].gameat">$date_str(logs[0].gameat)</abbr></a></td>
+    </tr>
+    </tbody>
+  </table>
+  $:render.LogsList(logs, game)
+  $if team.getAddon():
+    <div class="panel-heading">
+      <a href="/teamView?id_team=$team.id">$:long_tag(team.name)</a>&nbsp;分数改动
+    </div>
+    $:render.addonList(team.getAddon(), False)
+</div>
+
+$:render.chartScript(game.getPlayerPointChart(team.name, team.getUserNames(), logs), 'chart')

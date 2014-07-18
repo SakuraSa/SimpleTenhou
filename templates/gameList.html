@@ -1,0 +1,27 @@
+$def with(games)
+$var js = []
+$var css = []
+$var nav = [("/", u"比赛列表", True)]
+
+$if not games:
+  <p>没有找到任何比赛...</p>
+$else:
+  $for game in games[::-1]:
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h6><a href="/gameView?id_game=$game.id">$game.name</a></h6>
+        $if 2 in session.rights:
+          <a href="/gameEdit?method=edit&amp;id_game=$game.id">管理</a>&nbsp;
+          <a href="/addonEdit?method=edit&amp;id_game=$game.id">改分</a>&nbsp;
+          <a href="/gameEdit?method=delete&amp;id_game=$game.id" class="text-danger">删除</a>
+        $if game.id_statue == 0:
+          <small>准备中</small>
+        $elif game.id_statue == 1: 
+          <small><a href="$game.url">比赛中:$game.url</a></small>
+        $elif game.id_statue == 2:
+          <small>已结束</small>
+      </div>
+      <div class="panel-body">
+        $:game.des
+      </div>
+    </div>

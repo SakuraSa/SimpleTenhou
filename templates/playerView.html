@@ -1,0 +1,67 @@
+$def with(game, player)
+$ team = game.getTeamByUserName(player)
+$var js = []
+$var css = []
+$if team:
+  $ logs = game.getLogsByUserName(player)
+  $var nav = [("/", u"比赛列表", False), ("/gameView?id_game=%d" % game.id, u"比赛", False), ("/teamView?id_team=%d" % team.id, u"队伍数据", False), ("#", u"选手数据", True)]
+
+  <div class="panel panel-default">
+  <div class="panel-heading">
+    <h5>$player</h5>
+  </div>
+  <div class="panel-body">
+    <p>
+      参加了<strong><a href="/gameView?id_game=$game.id">$game.name</a></strong>，
+      属于<strong><a href="/teamView?id_team=$team.id">$team.name</a></strong>
+    </p>
+  $if logs:
+    <table style="width: 100%;">
+      <thead>
+        <th>时间</th><th>成就</th>
+      </thead>
+      <tbody>
+      $for log in logs:
+        $ aspects = [asp for asp in log.getAspects() if asp.name == player]
+        $if aspects:
+          <tr>
+          <td><abbr title="$log.gameat">$date_str(log.gameat)</abbr></td>
+          $for aspect in aspects:
+            <td><a href="/log?ref=$log.ref"><strong><abbr title="$aspect.des">$aspect.title</abbr></strong></a></td>
+          </tr>
+      </tbody>
+    </table>
+    <div id="chart" style="height:400px"></div>
+  </div>
+  $if logs:
+    <table class="table table-striped table-hover">
+    <thead>
+      <th>姓名</th>
+      <th>出场</th>
+      <th>顺位</th>
+      <th>积分</th>
+      <th>总点</th>
+      <th>最后出场</th>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a href="/playerView?id_game=$game.id&amp;name=$player">$player</a></td>
+        <td>$len(logs)</td>
+        <td>
+        $for log in logs[::-1]:
+          $if log.getRanksByName(player):
+            <a href="/log?ref=$log.ref">$log.getRanksByName(player)</a>
+        </td>
+        <td>$sum([log.getLogs_nameByUserName(player).getSC() for log in logs])</td>
+        <td>$sum([log.getLogs_nameByUserName(player).score for log in logs])</td>
+        <td><a href="/log?ref=$log.ref"><abbr title="$log.gameat">$date_str(log.gameat)</abbr></a></td>
+      </tr>
+    </tbody>
+    </table>
+    $:render.LogsList(logs, game)
+  </div>
+
+  $:render.chartScript(game.getPlayerPointChart(player, [player], logs), 'chart')
+$else:
+  $var nav = [("/", u"比赛列表", False), ("/gameView?id_game=%d" % game.id, u"比赛", False), ("#", u"队伍数据", False), ("#", u"选手数据", True)]
+  <p>该选手未参加比赛</p>

@@ -1,0 +1,45 @@
+$def with (game)
+$var js = []
+$var css = []
+$var nav = [("/", u"比赛列表", False), ("/gameView?id_game=%d" % game.id, u"比赛", True)]
+
+<div class="panel panel-default" id="panel_create">
+  <div class="panel-heading">
+    新建分数变动
+  </div>
+  <div class="panel-body">
+    <form action="/addonEdit?method=create" method="post">
+      <input type="hidden" value="#panel_list" name="jumpTo">
+      <input type="hidden" value="$game.id" name="id_game"/>
+      $for team in game.getTeam():
+        <label class="radio">
+          <input type="radio" name="id_team" value="$team.id" data-toggle="radio" required="true">
+          $:long_tag(team.name)
+        </label>
+      <div class="form-group">
+      <div class="input-group">
+        <span class="input-group-addon">分数：</span>
+        <input type="text" class="form-control" value=""
+               placeholder="数值" name="sc" required="true" maxlength="128"/>
+      </div>
+      </div>
+      <div class="form-group">
+      <div class="input-group">
+        <span class="input-group-addon">原因：</span>
+        <input type="text" class="form-control" value=""
+               placeholder="说明" name="des" required="true" maxlength="128"/>
+      </div>
+      </div>
+      <button class="btn btn-primary btn-lg btn-block">提交</button>
+    </form>
+  </div>
+</div>
+
+$for team in game.getTeam():
+  $if team.getAddon():
+    <div class="panel panel-default" id="panel_list_$team.id">
+      <div class="panel-heading">
+        <a href="/teamView?id_team=$team.id">$:long_tag(team.name)</a>&nbsp;分数改动
+      </div>
+      $:render.addonList(team.getAddon(), True)
+    </div>

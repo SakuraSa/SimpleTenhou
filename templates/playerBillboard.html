@@ -1,0 +1,56 @@
+$def with(game)
+$var js = []
+$var css = []
+$var nav = [("/", u"比赛列表", False), ("/gameView?id_game=%d" % game.id, u"比赛", False), ("/playerBillboard?id_game=%d" % game.id, u"个人排行榜", True)]
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+      <h5>$game.name</h5>
+  </div>
+  <div class="panel-body">
+    <table class="table table-condensed">
+    <tr>
+      <td><label class="radio">
+        <input type="radio" name="billboard-type" value="rank_avg" data-toggle="radio" alt="平均顺位" checked>
+        平均顺位
+      </label></td>
+      <td><label class="radio">
+        <input type="radio" name="billboard-type" value="score_avg" data-toggle="radio" alt="平均得点">
+        平均得点
+      </label></td>
+      <td><label class="radio">
+        <input type="radio" name="billboard-type" value="sc_avg" data-toggle="radio" alt="平均积分">
+        平均积分
+      </label></td>
+      <td><label class="radio">
+        <input type="radio" name="billboard-type" value="winner_avg" data-toggle="radio" alt="场均和了数">
+        场均和了数
+      </label></td>
+      <td><label class="radio">
+        <input type="radio" name="billboard-type" value="winner_score_avg" data-toggle="radio" alt="场均和了点">
+        场均和了点
+      </label></td>
+      <td><label class="radio">
+        <input type="radio" name="billboard-type" value="loser_avg" data-toggle="radio" alt="场均铳数">
+        场均铳数
+      </label></td>
+      <td><label class="radio">
+        <input type="radio" name="billboard-type" value="loser_score_avg" data-toggle="radio" alt="场均铳点">
+        场均铳点
+      </label></td>
+      <td><label class="radio">
+        <input type="radio" name="billboard-type" value="aspect_cnt" data-toggle="radio" alt="成就点">
+        成就点
+      </label></td>
+    </tr>
+    </table>
+    <div id="chart" style="width: 100%; height: 400px;"></div>
+    <table id="table" class="table table-striped table-hover"></table>
+  </div>
+</div>
+<script src="static/3rdpart/echarts/echarts-plain.js"></script>
+<script>
+  var st_dic = $:game.getStatisticsJson();
+  var id_game = $game.id;
+</script>
+<script src="static/js/playerBillboard.js"></script>

@@ -1,0 +1,11 @@
+$def with (script, chart)
+<script src="static/3rdpart/echarts/echarts-plain.js"></script>
+<script>
+  var showChart = function(){
+    var option= $:script ;
+    var myChart = echarts.init(document.getElementById('$chart'));
+    myChart.setOption(option);
+  }
+  $$(document).ready(showChart);
+  $$(window).resize(showChart);
+</script>

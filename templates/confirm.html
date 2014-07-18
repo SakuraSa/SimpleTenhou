@@ -1,0 +1,24 @@
+$def with (msg, okUrl, backUrl)
+$var js = []
+$var css = []
+$var nav = []
+
+<div class="alert alert-danger" role="alert">
+  <strong>危险操作：</strong>
+  <p> $msg </p>
+  <a id="btn-ok" class="btn btn-danger btn-small"> </a>
+  <a class="btn btn-default btn-small" href="$backUrl">取消</a>
+</div>
+<script>
+var countdown = 3;
+var showCountdown = function(){
+  if(countdown <= 0){
+    $$("#btn-ok").html("确定").attr("href","$:okUrl");
+  }else{
+    $$("#btn-ok").html("" + countdown);
+  }
+  countdown = countdown - 1;
+  setTimeout(showCountdown, 1000);
+}
+$$(document).ready(showCountdown);
+</script>

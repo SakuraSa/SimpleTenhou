@@ -1,0 +1,27 @@
+$def with (info, name)
+$var js = []
+$var css = ["static/3rdpart/css/demo.css"]
+$var nav = [("/", u"比赛列表", True)]
+
+<div class="login">
+  <div class="login-screen">
+    <div class="login-icon">
+      <img src="static/3rdpart/images/login/icon.png" alt="Welcome to TenhouGame" />
+      <h4>Welcome to <small>TenhouGame</small></h4>
+    </div>
+
+    <form class="login-form" action="/login" method="post">
+      <div class="form-group $info">
+        <input type="text" class="form-control" value="$name" placeholder="用户名" id="login-name" name="username" required="true"/>
+        <label class="login-field-icon fui-user" for="login-name"></label>
+      </div>
+
+      <div class="form-group $info">
+        <input type="password" class="form-control" value="" placeholder="密码" id="login-pass" name="password" required="true"/>
+        <label class="login-field-icon fui-lock" for="login-pass"></label>
+      </div>
+
+      <button class="btn btn-primary btn-lg btn-block">登陆</button>
+    </div>
+  </form>
+</div>

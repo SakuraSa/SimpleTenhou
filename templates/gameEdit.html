@@ -1,0 +1,136 @@
+$def with (game)
+$var js = []
+$var css = []
+$var nav = [("/", u"比赛列表", False), ("/gameView?id_game=%d" % game.id, u"比赛", True)]
+
+<div class="panel panel-default" id="panel_game">
+  <div class="panel-heading">
+  $if game:
+    <a href="/gameView?id_game=$game.id">$game.name</a>
+  $else:
+    创建比赛
+  </div>
+  <div class="panel-body">
+    <form action="/gameEdit" method="post">
+      <input type="hidden" value="#panel_game" name="jumpTo">
+      $if game:
+        <input type="hidden" value="$game.id" name="id"/>
+      <div class="form-group">
+      <div class="input-group">
+        <span class="input-group-addon">比赛名称:</span>
+        <input type="text" class="form-control" value="$(game.name if game else '')"
+               placeholder="比赛名称" id="game-name" name="name" required="true" maxlength="128"/>
+      </div>
+      </div>
+      <div class="form-group">
+      <div class="input-group">
+        <span class="input-group-addon">比赛地址:</span>
+        <input type="text" class="form-control" value="$(game.url if game else '')"
+               placeholder="比赛地址" id="game-url" name="url" required="true"/>
+      </div>
+      </div>
+      <div class="form-group">
+      <div class="input-group">
+        比赛状态:
+        <label class="radio">
+          <input type="radio" name="id_statue" value="0" data-toggle="radio"
+            $('checked' if (not game) or (game.id_statue == 0) else '')>
+          准备中
+        </label>
+        <label class="radio">
+          <input type="radio" name="id_statue" value="1" data-toggle="radio"
+            $('checked' if game and (game.id_statue == 1) else '')>
+          已开始
+        </label>
+        <label class="radio">
+          <input type="radio" name="id_statue" value="2" data-toggle="radio"
+            $('checked' if game and (game.id_statue == 2) else '')>
+          已结束
+        </label>
+      </div>
+      </div>
+      <div class="form-group">
+      <div class="input-group">
+        <span class="input-group-addon">比赛简介:</span>
+        <textarea type="text" class="form-control" name="des"
+                  style="width: 100%;height: 300px;">$(game.des if game else '')</textarea>
+      </div>
+      </div>
+      <button class="btn btn-primary btn-lg btn-block">提交</button>
+    </form>
+  </div>
+</div>
+$if game:
+    <div class="panel panel-default" id="panel_team">
+      <div class="panel-heading">队伍管理</div>
+      <div class="panel-body">
+        <form action="/teamEdit?method=create" method="post">
+          <input type="hidden" value="$game.id" name="id_game">
+          <input type="hidden" value="#panel_team" name="jumpTo">
+          <div class="input-group">
+            <span class="input-group-addon">
+                队伍的名称
+            </span>
+            <input type="text" class="form-control" name="name" required="true" maxlength="80">
+            <span class="input-group-btn">
+              <button type="submit" class="btn">创建</button>
+            </span>
+          </div>
+        </form>
+      $for team in game.getTeam():
+        <div class="well" id="well_team_$team.id">
+        <form>
+          <input type="hidden" value="#well_team_$team.id" name="jumpTo">
+          <input type="hidden" value="$team.id" name="id_team">
+          <div class="input-group">
+            <span class="input-group-addon">
+                队伍的名称
+            </span>
+            <input type="text" class="form-control" name="name" value="$team.name" maxlength="80">
+          </div>
+          <input name="userNameTags" class="tagsinput" value="$team.getUserNameTags()" required="true">
+          <div class="btn-group">
+            <button type="submit" class="btn btn-default"
+                    formaction="teamEdit?method=edit&id_team$team.id"
+                    formmethod="post">保存修改</button>
+            <button type="submit" class="btn btn-default"
+                    formaction="teamEdit?method=delete&id_team$team.id"
+                    formmethod="post">删除队伍</button>
+          </div>
+        </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel panel-default" id="panel_round">
+    <div class="panel-heading">牌谱管理</div>
+    <div class="panel-body">
+    <form action="/log?method=upload&id_game=$game.id" method="post">
+      <input type="hidden" value="#panel_round" name="jumpTo">
+      <div class="form-group">
+      <div class="input-group">
+        <span class="input-group-addon">牌谱地址:</span>
+        <textarea type="text" class="form-control"
+               placeholder="牌谱地址" name="ref" required="true"></textarea>
+        <span class="input-group-btn">
+          <button type="submit" class="btn">上传</button>
+        </span>
+      </div>
+      </div>
+    </form>
+    </div>
+
+    <table style="width: 100%;" class="table table-striped table-hover">
+      <tbody>
+      $for log in game.getLogs():
+        <tr>
+        <td>$log.gameat</td>
+        <td><a href="/log?ref=$log.ref">$log.ref</a></td>
+        $for logs_name in log.getLogs_name():
+          <td>$logs_name.name</td><td>$logs_name.point</td>
+        <td><a href="/log?method=delete&id_log=$log.id">删除</a></td>
+        </tr>
+        </tbody>
+    </table>
+
+    </div>
