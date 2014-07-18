@@ -383,7 +383,7 @@ class DAOgame(DAO):
             for log in logs[::-1]:
                 ln = log.getLogs_nameByTeam(team)
                 ds += ln.getSC()
-                dl.append(ds)
+                dl.append(service.float_fix(ds))
             datas.append(dl)
             names.append(service.long_str(team.name))
         max_len = max(len(row) for row in datas)
@@ -418,7 +418,7 @@ class DAOgame(DAO):
                         SC = ln.getSC()
                         cnta += SC
                         cnts[i] += SC
-                        datas[i].append(cnts[i])
+                        datas[i].append(service.float_fix(cnts[i]))
                         if isTeam:
                             datas[-1].append(cnta)
                         break

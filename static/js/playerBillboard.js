@@ -1,6 +1,6 @@
 var get_st_list = function(label){
   var desc=true;
-  if(label=="rank_avg") desc=false;
+  if(label=="rank_avg" || label=="loser_avg") desc=false;
   lst = [];
   for(var name in st_dic){
     var obj = {};

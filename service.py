@@ -196,6 +196,7 @@ def checkRoom(ref, id_game):
         raise Exception("Unexpected lobby %s found, while looking for %s" % (info['lobby'], lobby))
 
 def jsonChart(title, subtitle, dataLines, dataNames, dataLabels, ticks=5000, dataZoom=False):
+    dataLines = [list(map(float_fix, line)) for line in dataLines]
     maxV, minV = 0, 25000
     for line in dataLines:
         for dt in line:
@@ -385,7 +386,7 @@ def get_aspect(game):
     #大逆转
     if game.logs[-1].startScore[winner.index] == min(game.logs[-1].startScore):
         ret.append(Aspect(
-            3.5,
+            4.5,
             winner.name,
             u"大逆转",
             u"All Last 以4位身份逆1"
@@ -413,7 +414,7 @@ def get_aspect(game):
     if (not last_log.isDraw) and len(dead_pl_list) > 1:
         winner = game.players[last_log.winnerIndex[0]]
         ret.append(Aspect(
-            3.5 + (len(dead_pl_list) - 2) * 3,
+            4.5 + (len(dead_pl_list) - 2) * 3,
             winner.name,
             u"大杀四方",
             u"%s 一局内击飞2或3名玩家" % last_log.name
@@ -518,7 +519,7 @@ def get_aspect(game):
             #里宝4
             if lg.dora_inner[idx] >= 4:
                 ret.append(Aspect(
-                    2 + lg.dora_inner[idx] / 4.0,
+                    2.5 + lg.dora_inner[idx] / 4.0,
                     game.players[pid].name,
                     u"龙宝眷顾",
                     u"%s 4里宝以上和了" % lg.name
@@ -527,7 +528,7 @@ def get_aspect(game):
             #役满
             if lg.fan[idx] >= 13:
                 ret.append(Aspect(
-                    5,
+                    6,
                     game.players[pid].name,
                     u"十三杰",
                     u"%s 役满和了" % lg.name
@@ -578,7 +579,7 @@ def get_statistics(log_list):
             aspect_group[aspect.name] = [aspect.get_dict()]
     for player in aspect_group:
         pl_st_dic[player]["aspect_list"] = aspect_group[player]
-        pl_st_dic[player]["aspect_cnt"] = sum(asp['weight'] for asp in aspect_group[player])
+        pl_st_dic[player]["aspect_cnt"] = float_fix(sum(asp['weight'] for asp in aspect_group[player]))
 
     return pl_st_dic
 
@@ -612,21 +613,24 @@ def get_statistics_by_name(player, game_list):
     return dict(
         count=count,
         rank_cnt=rank_cnt,
-        rank_avg=rank_cnt / float(count),
+        rank_avg=float_fix(rank_cnt / float(count)),
         score_cnt=score_cnt,
-        score_avg=score_cnt / float(count),
+        score_avg=float_fix(score_cnt / float(count)),
         sc_cnt=sc_cnt,
-        sc_avg=sc_cnt / float(count),
+        sc_avg=float_fix(sc_cnt / float(count)),
         winner_cnt=winner_cnt,
-        winner_avg=winner_cnt / float(count),
+        winner_avg=float_fix(winner_cnt / float(count)),
         winner_score_cnt=winner_score_cnt,
-        winner_score_avg=winner_score_cnt / float(count),
+        winner_score_avg=float_fix(winner_score_cnt / float(count)),
         loser_cnt=loser_cnt,
-        loser_avg=loser_cnt / float(count),
+        loser_avg=float_fix(loser_cnt / float(count)),
         loser_score_cnt=loser_score_cnt,
-        loser_score_avg=loser_score_cnt / float(count),
+        loser_score_avg=float_fix(loser_score_cnt / float(count)),
     )
 
+def float_fix(num, fix=2):
+    fixer = 10 ** fix
+    return int(num * fixer + 0.5) / float(fixer)
 
 if __name__ == '__main__':
     pass
